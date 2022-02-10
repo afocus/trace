@@ -2,7 +2,8 @@ package http
 
 import (
 	"net/http"
-	"tempotest/traceing"
+
+	"github.com/afocus/trace"
 )
 
 type Handler struct {
@@ -41,19 +42,19 @@ func (h *Handler) ServeHTTP(rw http.ResponseWriter, req *http.Request) {
 		path = path + "?" + raw
 	}
 
-	e := traceing.Start(
+	e := trace.Start(
 		req.Context(),
 		req.URL.Path,
-		traceing.Attribute("http.method", req.Method),
-		traceing.Attribute("http.url", path),
-		traceing.Attribute("http.request_content_length", req.ContentLength),
+		trace.Attribute("http.method", req.Method),
+		trace.Attribute("http.url", path),
+		trace.Attribute("http.request_content_length", req.ContentLength),
 	)
 
 	w := &responseWriter{w: rw}
 
 	h.hander.ServeHTTP(w, req.WithContext(e.Context()))
 	e.End(
-		traceing.Attribute("http.status_code", w.statusCode),
-		traceing.Attribute("http.response_content_length", w.size),
+		trace.Attribute("http.status_code", w.statusCode),
+		trace.Attribute("http.response_content_length", w.size),
 	)
 }

@@ -1,4 +1,4 @@
-module github.com/afocus/traceing
+module github.com/afocus/trace
 
 go 1.17
 

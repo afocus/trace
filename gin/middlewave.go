@@ -3,7 +3,8 @@ package gin
 import (
 	"errors"
 	"net/http"
-	"tempotest/traceing"
+
+	"github.com/afocus/trace"
 
 	"github.com/gin-gonic/gin"
 )
@@ -23,12 +24,12 @@ func Middlewave() func(*gin.Context) {
 			c.Request = c.Request.WithContext(savedCtx)
 		}()
 
-		e := traceing.Start(
-			traceing.ExtractHttpHeader(savedCtx, c.Request.Header),
+		e := trace.Start(
+			trace.ExtractHttpHeader(savedCtx, c.Request.Header),
 			c.FullPath(),
-			traceing.Attribute("http.url", path),
-			traceing.Attribute("http.method", c.Request.Method),
-			traceing.Attribute("http.user_agent", c.Request.UserAgent()),
+			trace.Attribute("http.url", path),
+			trace.Attribute("http.method", c.Request.Method),
+			trace.Attribute("http.user_agent", c.Request.UserAgent()),
 		)
 
 		c.Request = c.Request.WithContext(e.Context())
@@ -45,14 +46,14 @@ func Middlewave() func(*gin.Context) {
 		switch status / 100 {
 		case 1, 2, 3:
 			e.End(
-				traceing.Attribute("http.status_code", status),
-				traceing.Attribute("http.response_content_length", size),
+				trace.Attribute("http.status_code", status),
+				trace.Attribute("http.response_content_length", size),
 			)
 		default:
 			e.EndError(
 				errors.New(http.StatusText(status)),
-				traceing.Attribute("http.status_code", status),
-				traceing.Attribute("http.response_content_length", size),
+				trace.Attribute("http.status_code", status),
+				trace.Attribute("http.response_content_length", size),
 			)
 		}
 

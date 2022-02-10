@@ -1,4 +1,4 @@
-package traceing
+package trace
 
 import (
 	"context"

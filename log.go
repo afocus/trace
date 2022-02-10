@@ -1,4 +1,4 @@
-package traceing
+package trace
 
 import (
 	"context"
@@ -65,7 +65,7 @@ func Start(c context.Context, name string, attrs ...attribute.KeyValue) *LoggerC
 		trace.WithAttributes(attrs...),
 	)
 	logger := Log(ctx)
-	loggerEvt := logger.Info().Str("traceing", "start")
+	loggerEvt := logger.Info().Str("trace", "start")
 	for _, v := range attrs {
 		loggerEvt.Interface(string(v.Key), v.Value.AsInterface())
 	}
@@ -120,7 +120,7 @@ func (l *LoggerContext) SpanID() string {
 
 func (l *LoggerContext) end(logger *zerolog.Event, status codes.Code, err error, attrs ...attribute.KeyValue) {
 	span := trace.SpanFromContext(l.Context())
-	logger.Dur("duration", time.Since(l.begin)).Str("traceing", "end")
+	logger.Dur("duration", time.Since(l.begin)).Str("trace", "end")
 	for _, v := range attrs {
 		logger.Interface(string(v.Key), v.Value.AsInterface())
 	}

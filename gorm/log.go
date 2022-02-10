@@ -2,8 +2,9 @@ package gorm
 
 import (
 	"context"
-	"tempotest/traceing"
 	"time"
+
+	"github.com/afocus/trace"
 
 	"github.com/rs/zerolog"
 	"github.com/rs/zerolog/log"
@@ -31,7 +32,7 @@ func (c *zerologgerDriver) Trace(ctx context.Context, begin time.Time, fc func()
 		return
 	}
 	var logevt *zerolog.Event
-	if e := traceing.FromContext(ctx); e != nil {
+	if e := trace.FromContext(ctx); e != nil {
 		if err != nil {
 			logevt = e.Log().Error().Err(err)
 		} else {
