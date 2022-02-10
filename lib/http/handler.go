@@ -43,7 +43,7 @@ func (h *Handler) ServeHTTP(rw http.ResponseWriter, req *http.Request) {
 	}
 
 	e := trace.Start(
-		req.Context(),
+		trace.ExtractHttpHeader(req.Context(), req.Header),
 		req.URL.Path,
 		trace.Attribute("http.method", req.Method),
 		trace.Attribute("http.url", path),
