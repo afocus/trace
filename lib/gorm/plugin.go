@@ -53,15 +53,9 @@ func (g *plugin) before(method string) func(*gorm.DB) {
 		if db.Statement.Context == nil {
 			return
 		}
-
-		e := trace.Start(
-			db.Statement.Context,
-			fmt.Sprintf("database %s", method),
-			trace.Attribute("db.sql", db.Statement.SQL.String()),
-			trace.Attribute("db.system", db.Dialector.Name()),
-		)
-
-		db.Statement.Context = e.WithContext(e.Context())
+		name := fmt.Sprintf("database %s", method)
+		_, ctx := trace.Start(db.Statement.Context, name, trace.Attribute("db.system", db.Dialector.Name()))
+		db.Statement.Context = ctx
 	}
 }
 func (g *plugin) after(db *gorm.DB) {
@@ -69,10 +63,6 @@ func (g *plugin) after(db *gorm.DB) {
 		return
 	}
 	if e := trace.FromContext(db.Statement.Context); e != nil {
-		if db.Error != nil {
-			e.EndError(db.Error)
-		} else {
-			e.EndOK()
-		}
+		e.End(db.Error)
 	}
 }

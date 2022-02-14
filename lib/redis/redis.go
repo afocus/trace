@@ -10,8 +10,8 @@ import (
 type Hook struct{}
 
 func (h Hook) BeforeProcess(c context.Context, cmd redis.Cmder) (context.Context, error) {
-	e := trace.Start(c, "redis "+cmd.Name(), trace.Attribute("db.system", "redis"))
-	return e.WithContext(e.Context()), nil
+	_, ctx := trace.Start(c, "redis "+cmd.Name(), trace.Attribute("db.system", "redis"))
+	return ctx, nil
 }
 
 func (h Hook) AfterProcess(c context.Context, cmd redis.Cmder) error {
@@ -23,8 +23,8 @@ func (h Hook) AfterProcess(c context.Context, cmd redis.Cmder) error {
 }
 
 func (h Hook) BeforeProcessPipeline(c context.Context, cmds []redis.Cmder) (context.Context, error) {
-	e := trace.Start(c, "redis pipeline", trace.Attribute("db.system", "redis"))
-	return e.WithContext(e.Context()), nil
+	_, ctx := trace.Start(c, "redis pipeline", trace.Attribute("db.system", "redis"))
+	return ctx, nil
 
 }
 

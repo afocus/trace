@@ -46,7 +46,7 @@ func (c *zerologgerDriver) Trace(ctx context.Context, begin time.Time, fc func()
 		}
 	}
 	sql, rows := fc()
-	logevt.Str("sql", sql).Int64("rows", rows).Dur("cost", time.Since(begin)).Send()
+	logevt.Str("sql", sql).Int64("rows", rows).Dur("cost", time.Since(begin)).Msg("from gorm")
 }
 
 func (c *zerologgerDriver) LogMode(logger.LogLevel) logger.Interface { return c }
