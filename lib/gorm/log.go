@@ -33,17 +33,12 @@ func (c *zerologgerDriver) Trace(ctx context.Context, begin time.Time, fc func()
 	}
 	var logevt *zerolog.Event
 	if e := trace.FromContext(ctx); e != nil {
-		if err != nil {
-			logevt = e.Log().Error().Err(err)
-		} else {
-			logevt = e.Log().Info()
-		}
+		logevt = e.Log().Trace()
 	} else {
-		if err != nil {
-			logevt = log.Error().Err(err)
-		} else {
-			logevt = log.Info()
-		}
+		logevt = log.Trace()
+	}
+	if err != nil {
+		logevt.Err(err)
 	}
 	sql, rows := fc()
 	logevt.Str("sql", sql).Int64("rows", rows).Dur("cost", time.Since(begin)).Msg("from gorm")
@@ -51,8 +46,20 @@ func (c *zerologgerDriver) Trace(ctx context.Context, begin time.Time, fc func()
 
 func (c *zerologgerDriver) LogMode(logger.LogLevel) logger.Interface { return c }
 
-func (c *zerologgerDriver) Info(context.Context, string, ...interface{}) {}
+func (c *zerologgerDriver) Info(ctx context.Context, s string, v ...interface{}) {
+	if e := trace.FromContext(ctx); e != nil {
+		e.Log().Info().Msgf(s, v...)
+	}
+}
 
-func (c *zerologgerDriver) Warn(context.Context, string, ...interface{}) {}
+func (c *zerologgerDriver) Warn(ctx context.Context, s string, v ...interface{}) {
+	if e := trace.FromContext(ctx); e != nil {
+		e.Log().Warn().Msgf(s, v...)
+	}
+}
 
-func (c *zerologgerDriver) Error(context.Context, string, ...interface{}) {}
+func (c *zerologgerDriver) Error(ctx context.Context, s string, v ...interface{}) {
+	if e := trace.FromContext(ctx); e != nil {
+		e.Log().Error().Msgf(s, v...)
+	}
+}

@@ -1,7 +1,9 @@
 package http
 
 import (
+	"bytes"
 	"context"
+	"encoding/json"
 	"io"
 	"net/http"
 	"net/url"
@@ -37,4 +39,30 @@ func Head(c context.Context, url string) (*http.Response, error) {
 		return nil, err
 	}
 	return DefaultClient.Do(req)
+}
+
+func PostJSON(c context.Context, url string, send, result interface{}) (int, error) {
+	data, err := json.Marshal(send)
+	if err != nil {
+		return 0, err
+	}
+	var buf bytes.Buffer
+	buf.Write(data)
+	response, err := Post(c, url, "application/json", &buf)
+	if err != nil {
+		return 0, err
+	}
+	defer response.Body.Close()
+	err = json.NewDecoder(response.Body).Decode(result)
+	return response.StatusCode, err
+}
+
+func GetJSON(c context.Context, url string, result interface{}) (int, error) {
+	response, err := Get(c, url)
+	if err != nil {
+		return 0, err
+	}
+	defer response.Body.Close()
+	err = json.NewDecoder(response.Body).Decode(result)
+	return response.StatusCode, err
 }

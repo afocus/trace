@@ -11,7 +11,6 @@ import (
 	"go.opentelemetry.io/otel"
 	"go.opentelemetry.io/otel/attribute"
 	"go.opentelemetry.io/otel/propagation"
-	tracer "go.opentelemetry.io/otel/trace"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials/insecure"
 
@@ -24,12 +23,6 @@ import (
 )
 
 type exporter func(ctx context.Context) (trace.SpanExporter, error)
-
-var defaultTracker = otel.Tracer("github.com/afocus/trace")
-
-func GetDefaultTracer() tracer.Tracer {
-	return defaultTracker
-}
 
 func ExportHTTP(endpoint string) func(ctx context.Context) (trace.SpanExporter, error) {
 	return func(ctx context.Context) (trace.SpanExporter, error) {
