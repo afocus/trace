@@ -2,6 +2,7 @@ package http
 
 import (
 	"net/http"
+	"strings"
 
 	"github.com/afocus/trace"
 )
@@ -47,13 +48,18 @@ func (h *Handler) ServeHTTP(rw http.ResponseWriter, req *http.Request) {
 	w := &responseWriter{w: rw}
 	h.hander.ServeHTTP(w, req.WithContext(ctx))
 
+	clientip := req.Header.Get("X-Forwarded-For")
+	if clientip == "" {
+		clientip = strings.Split(req.RemoteAddr, ":")[0]
+	}
+
 	e.SetAttributes(
 		trace.Attribute("http.method", req.Method),
 		trace.Attribute("http.url", path),
 		trace.Attribute("http.request_content_length", req.ContentLength),
 		trace.Attribute("http.status_code", w.statusCode),
 		trace.Attribute("http.response_content_length", w.size),
-		trace.Attribute("http.clientip", req.Header.Get("X-Forwarded-For")),
+		trace.Attribute("http.clientip", clientip),
 	)
 	e.End()
 }

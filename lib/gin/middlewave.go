@@ -46,7 +46,7 @@ func Middlewave() func(*gin.Context) {
 			trace.Attribute("http.user_agent", c.Request.UserAgent()),
 			trace.Attribute("http.status_code", status),
 			trace.Attribute("http.response_content_length", size),
-			trace.Attribute("http.clientip", c.Request.Header.Get("X-Forwarded-For")),
+			trace.Attribute("http.clientip", c.ClientIP()),
 		)
 
 		if len(c.Errors) > 0 {
