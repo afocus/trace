@@ -10,9 +10,9 @@
 ```go
 func main(){
 
-    shutdown, err := traceing.InitProvider("afocus", traceing.ProviderStdout())
+    shutdown, err := trace.InitProvider("afocus", trace.ExportStdOut())
 	if err != nil {
-		log.Panic(err)
+		log.Fatal(err)
 	}
     defer shutdown()
     // todo
@@ -79,8 +79,7 @@ trace的日志基于`zerolog` 并自动携带trace信息...
 t, ctx := trace.Start(parentCtx, "做一次请求", trace.Attribute("uid",uid))
 defer t.End()
 
-t.Log().Info("xxxxxx")
-t.Log().Error("an error")
+t.Log().Info().Msg("xxxxx)
 
 ```
 

@@ -53,6 +53,7 @@ func (h *Handler) ServeHTTP(rw http.ResponseWriter, req *http.Request) {
 		trace.Attribute("http.request_content_length", req.ContentLength),
 		trace.Attribute("http.status_code", w.statusCode),
 		trace.Attribute("http.response_content_length", w.size),
+		trace.Attribute("http.clientip", req.Header.Get("X-Forwarded-For")),
 	)
 	e.End()
 }
