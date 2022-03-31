@@ -17,7 +17,6 @@ import (
 	"go.opentelemetry.io/contrib/propagators/b3"
 	"go.opentelemetry.io/otel/exporters/otlp/otlptrace/otlptracegrpc"
 	"go.opentelemetry.io/otel/exporters/otlp/otlptrace/otlptracehttp"
-	"go.opentelemetry.io/otel/exporters/stdout/stdouttrace"
 	"go.opentelemetry.io/otel/sdk/resource"
 	"go.opentelemetry.io/otel/sdk/trace"
 )
@@ -47,9 +46,19 @@ func ExportGRPC(endpoint string) func(ctx context.Context) (trace.SpanExporter, 
 	}
 }
 
+type defaultExport struct{}
+
+func (d *defaultExport) Shutdown(ctx context.Context) error {
+	return nil
+}
+
+func (d *defaultExport) ExportSpans(ctx context.Context, spans []trace.ReadOnlySpan) error {
+	return nil
+}
+
 func ExportStdOut() func(ctx context.Context) (trace.SpanExporter, error) {
 	return func(ctx context.Context) (trace.SpanExporter, error) {
-		return stdouttrace.New()
+		return &defaultExport{}, nil
 	}
 }
 
