@@ -23,12 +23,16 @@ import (
 
 type exporter func(ctx context.Context) (trace.SpanExporter, error)
 
-func ExportHTTP(endpoint string) func(ctx context.Context) (trace.SpanExporter, error) {
+func ExportHTTP(endpoint string, usehttps bool) func(ctx context.Context) (trace.SpanExporter, error) {
 	return func(ctx context.Context) (trace.SpanExporter, error) {
-		return otlptracehttp.New(ctx,
+		opts := []otlptracehttp.Option{
 			otlptracehttp.WithEndpoint(endpoint),
-			otlptracehttp.WithTimeout(time.Second*30),
-		)
+			otlptracehttp.WithTimeout(time.Second * 30),
+		}
+		if !usehttps {
+			opts = append(opts, otlptracehttp.WithInsecure())
+		}
+		return otlptracehttp.New(ctx,...opts)
 	}
 }
 
