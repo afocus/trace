@@ -32,7 +32,7 @@ func ExportHTTP(endpoint string, usehttps bool) func(ctx context.Context) (trace
 		if !usehttps {
 			opts = append(opts, otlptracehttp.WithInsecure())
 		}
-		return otlptracehttp.New(ctx,...opts)
+		return otlptracehttp.New(ctx, opts...)
 	}
 }
 
