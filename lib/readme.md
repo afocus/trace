@@ -109,4 +109,20 @@ func GetArms(ctx context.Context, arms *[]NParkArm) error {
 }
 ```
 
+## amqp
+```go
+import traceamqp "github.com/afocus/trace/lib/amqp"
+for msg := range sub.GetMessages() {
+	switch e := msg.(type) {
+	case *amqp.Delivery:
+		ctx, err := traceamqp.SubHeader("sub msg", &e.Delivery)
+		if err != nil {
+			log.Println(err)
+			e.Accpet(true)
+		}
+		log.Printf("Received a message: %s", e.Body)
+		fn(ctx)
+	}
+}
+```
 

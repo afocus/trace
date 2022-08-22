@@ -142,7 +142,7 @@ func (l *Trace) End(err ...error) {
 	traceSpanPool.Put(l)
 }
 
-func SubHeader(traceV, spanV string) (context.Context, error) {
+func CreateFromTrace(name, traceV, spanV string) (context.Context, error) {
 	var traceID trace.TraceID
 	var spanID trace.SpanID
 	var traceErr, spanErr error
@@ -165,7 +165,7 @@ func SubHeader(traceV, spanV string) (context.Context, error) {
 		})
 	}
 	ctx := trace.ContextWithSpanContext(context.Background(), sc)
-	tr, ctx := Start(ctx, "rmq")
+	tr, ctx := Start(ctx, name)
 	tr.End()
 	return ctx, nil
 }
