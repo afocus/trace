@@ -7,7 +7,7 @@ import (
 	"github.com/streadway/amqp"
 )
 
-func SubHeader(name string, d *amqp.Delivery) (context.Context, error) {
+func Inject(name string, d *amqp.Delivery) (context.Context, error) {
 	var traceID, spanID string
 	for key, hh := range d.Headers {
 		switch key {
