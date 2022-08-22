@@ -2,8 +2,8 @@ package amqp
 
 import (
 	"context"
-	"mygotest/trace"
 
+	"github.com/afocus/trace"
 	"github.com/streadway/amqp"
 )
 
