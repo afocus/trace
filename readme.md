@@ -93,6 +93,7 @@ t.Log().Info().Msg("xxxxx)
 * gorm
 * redis
 * gin
+* amqp
 
 
 

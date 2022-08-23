@@ -109,4 +109,43 @@ func GetArms(ctx context.Context, arms *[]NParkArm) error {
 }
 ```
 
+## amqp
+### subscribe
+```go
+import traceamqp "github.com/afocus/trace"
+for msg := range sub.GetMessages() {
+		switch e := msg.(type) {
+		case *amqp.Delivery:
+			ctx := trace.ExtractMapInterface(context.Background(), e.Headers)
+			tr, ctx := trace.Start(ctx, "read mq")
+			defer tr.End()
+			err := fn(ctx)
+			if err != nil {
+				log.Println(err)
+				e.Accpet(true)
+			}
+			log.Printf("Received a message: %s", e.Body)
+		}
+	}
+```
+### publish
+```go
+import traceamqp "github.com/afocus/trace"
+tr, ctx := trace.Start(ctx, "pub mq", trace.Attribute("exchange", exchange),
+		trace.Attribute("routekey", routing),
+		trace.Attribute("content-type", data.ContentType))
+tr.SetAttributes()
+defer tr.End()
+h := oamqp.Table{}
+trace.InjectMapInterface(ctx, h)
+publish := amqp.Publishing{
+	Body:     []byte("Hello World with trace!"),
+	Headers:  h,
+	Priority: 0,
+}
+err := pub.PubPlus("hello", publish)
+if err != nil {
+	fmt.Println(err)
+	return
+}```
 
