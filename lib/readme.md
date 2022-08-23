@@ -116,7 +116,7 @@ import traceamqp "github.com/afocus/trace"
 for msg := range sub.GetMessages() {
 		switch e := msg.(type) {
 		case *amqp.Delivery:
-			ctx := trace.ExtractMapInterface(context.Background(), (&e.Delivery).Headers)
+			ctx := trace.ExtractMapInterface(context.Background(), e.Headers)
 			tr, ctx := trace.Start(ctx, "read mq")
 			defer tr.End()
 			err := fn(ctx)
@@ -137,8 +137,6 @@ tr, ctx := trace.Start(ctx, "pub mq", trace.Attribute("exchange", exchange),
 tr.SetAttributes()
 defer tr.End()
 h := oamqp.Table{}
-h["traceID"] = tr.TraceID()
-h["spanID"] = tr.SpanID()
 trace.InjectMapInterface(ctx, h)
 publish := amqp.Publishing{
 	Body:     []byte("Hello World with trace!"),
