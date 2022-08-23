@@ -141,31 +141,3 @@ func (l *Trace) End(err ...error) {
 	l.span.End()
 	traceSpanPool.Put(l)
 }
-
-func CreateFromTrace(name, traceV, spanV string) (context.Context, error) {
-	var traceID trace.TraceID
-	var spanID trace.SpanID
-	var traceErr, spanErr error
-	var sc trace.SpanContext
-	traceID, traceErr = trace.TraceIDFromHex(traceV)
-	if traceErr != nil {
-		return context.Background(), traceErr
-	}
-
-	spanID, spanErr = trace.SpanIDFromHex(spanV)
-	if spanErr != nil {
-		return context.Background(), traceErr
-	}
-	if traceErr == nil && spanErr == nil {
-		sc = trace.NewSpanContext(trace.SpanContextConfig{
-			TraceID:    traceID,
-			SpanID:     spanID,
-			TraceFlags: 01,
-			Remote:     false,
-		})
-	}
-	ctx := trace.ContextWithSpanContext(context.Background(), sc)
-	tr, ctx := Start(ctx, name)
-	tr.End()
-	return ctx, nil
-}
