@@ -15,6 +15,7 @@ import (
 	"google.golang.org/grpc/credentials/insecure"
 
 	"go.opentelemetry.io/contrib/propagators/b3"
+
 	"go.opentelemetry.io/otel/exporters/otlp/otlptrace/otlptracegrpc"
 	"go.opentelemetry.io/otel/exporters/otlp/otlptrace/otlptracehttp"
 	"go.opentelemetry.io/otel/sdk/resource"
@@ -116,6 +117,11 @@ func InjectMapString(ctx context.Context, data map[string]string) {
 	otel.GetTextMapPropagator().Inject(ctx, propagation.MapCarrier(data))
 }
 
+// InjectMapInterface 将trace信息注入到 data
+func InjectMapInterface(ctx context.Context, data map[string]interface{}) {
+	otel.GetTextMapPropagator().Inject(ctx, MapInterfaceCarrier(data))
+}
+
 // ExtractHttpHeader 从http header头里提取trace信息
 // 返回一个派生自ctx的具有trace信息的新context
 func ExtractHttpHeader(ctx context.Context, header http.Header) context.Context {
@@ -126,4 +132,28 @@ func ExtractHttpHeader(ctx context.Context, header http.Header) context.Context 
 // 返回一个派生自ctx的具有trace信息的新context
 func ExtractMapString(ctx context.Context, data map[string]string) context.Context {
 	return otel.GetTextMapPropagator().Extract(ctx, propagation.MapCarrier(data))
+}
+
+// ExtractMapInterface 从map中提取trace信息
+// 返回一个派生自ctx的具有trace信息的新context
+func ExtractMapInterface(ctx context.Context, data map[string]interface{}) context.Context {
+	return otel.GetTextMapPropagator().Extract(ctx, MapInterfaceCarrier(data))
+}
+
+type MapInterfaceCarrier map[string]interface{}
+
+func (c MapInterfaceCarrier) Get(key string) string {
+	return c[key].(string)
+}
+
+func (c MapInterfaceCarrier) Set(key string, value string) {
+	c[key] = value
+}
+
+func (c MapInterfaceCarrier) Keys() []string {
+	keys := make([]string, 0, len(c))
+	for k := range c {
+		keys = append(keys, k)
+	}
+	return keys
 }
