@@ -143,7 +143,12 @@ func ExtractMapInterface(ctx context.Context, data map[string]interface{}) conte
 type MapInterfaceCarrier map[string]interface{}
 
 func (c MapInterfaceCarrier) Get(key string) string {
-	return c[key].(string)
+	value, ok := c[key]
+	var valuestr string
+	if ok {
+		valuestr = value.(string)
+	}
+	return valuestr
 }
 
 func (c MapInterfaceCarrier) Set(key string, value string) {
