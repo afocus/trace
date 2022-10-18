@@ -27,21 +27,7 @@ type zerologgerDriver struct {
 
 // // Trace 主要输出log日志的方法
 func (c *zerologgerDriver) Trace(ctx context.Context, begin time.Time, fc func() (string, int64), err error) {
-	duration := time.Since(begin)
-	if err == nil && duration <= c.slowDura {
-		return
-	}
-	var logevt *zerolog.Event
-	if e := trace.FromContext(ctx); e != nil {
-		logevt = e.Log().Trace()
-	} else {
-		logevt = log.Trace()
-	}
-	if err != nil {
-		logevt.Err(err)
-	}
-	sql, rows := fc()
-	logevt.Str("sql", sql).Int64("rows", rows).Dur("cost", time.Since(begin)).Msg("from gorm")
+	
 }
 
 func (c *zerologgerDriver) LogMode(logger.LogLevel) logger.Interface { return c }
