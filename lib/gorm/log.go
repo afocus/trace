@@ -6,8 +6,6 @@ import (
 
 	"github.com/afocus/trace"
 
-	"github.com/rs/zerolog"
-	"github.com/rs/zerolog/log"
 	"gorm.io/gorm/logger"
 )
 
@@ -27,7 +25,7 @@ type zerologgerDriver struct {
 
 // // Trace 主要输出log日志的方法
 func (c *zerologgerDriver) Trace(ctx context.Context, begin time.Time, fc func() (string, int64), err error) {
-	
+
 }
 
 func (c *zerologgerDriver) LogMode(logger.LogLevel) logger.Interface { return c }
