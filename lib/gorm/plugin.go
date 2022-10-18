@@ -63,6 +63,7 @@ func (g *plugin) after(db *gorm.DB) {
 		return
 	}
 	if e := trace.FromContext(db.Statement.Context); e != nil {
+		e.SetAttributes(trace.Attribute("sql", db.Statement.SQL.String()), trace.Attribute("args", db.Statement.Vars), trace.Attribute("rows", db.Statement.RowsAffected))
 		e.End(db.Error)
 	}
 }
